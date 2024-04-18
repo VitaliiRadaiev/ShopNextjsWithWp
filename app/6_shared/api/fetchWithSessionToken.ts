@@ -14,7 +14,8 @@ export async function fetchWithSessionToken<T>(
     const sessionToken = await getSessionToken();
 
     const res = await fetcher(sessionToken);
-
+    console.log(res);
+    
     if (res.errors) {
         const isSessionError = res.errors.some(error => targetErrors.includes(error.message))
         

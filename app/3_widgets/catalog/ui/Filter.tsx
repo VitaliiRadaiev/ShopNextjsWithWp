@@ -4,9 +4,10 @@ import { AttributeType, CategoryType, TagType } from '@/app/5_entities/categorie
 import { Checkbox } from '@/app/6_shared/ui/FormFields/Checkbox';
 import clsx from 'clsx';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { Slider } from '@mui/base/Slider';
 import { Button } from '@/app/6_shared/ui/Buttons/Button';
+import { CatalogLoadingStateContext } from '@/app/5_entities/catalog';
 
 
 interface FilterProps {
@@ -25,6 +26,7 @@ export function Filter({ attributes, priceRange, tags }: FilterProps) {
     const pathname = usePathname();
     const { replace } = useRouter();
     const params = new URLSearchParams(searchParams);
+    const { setState: setIsLoading } = useContext(CatalogLoadingStateContext);
 
     const startValue = params.get('minPrice') || priceRange.lowestPrice;
     const endValue = params.get('maxPrice') || priceRange.highestPrice;
@@ -49,6 +51,7 @@ export function Filter({ attributes, priceRange, tags }: FilterProps) {
                             params.delete('inStock');
                             params.set('page', '1');
                         }
+                        setIsLoading(true);
                         replace(`${pathname}?${params.toString()}`, {
                             scroll: false
                         });
@@ -71,6 +74,7 @@ export function Filter({ attributes, priceRange, tags }: FilterProps) {
                     className='w-full'
                     onClick={() => {
                         setPriceValues([priceRange.lowestPrice, priceRange.highestPrice]);
+                        setIsLoading(true);
                         replace(`${pathname}`, {
                             scroll: false
                         })
@@ -92,6 +96,8 @@ function FilterTags({ tags }: FilterTagsProps) {
     const pathname = usePathname();
     const { replace } = useRouter();
     const params = new URLSearchParams(searchParams);
+    const { setState: setIsLoading } = useContext(CatalogLoadingStateContext);
+
 
     
     const handleFilter = (toggle: boolean, id: string) => {
@@ -108,6 +114,7 @@ function FilterTags({ tags }: FilterTagsProps) {
         replace(`${pathname}?${params.toString()}`, {
             scroll: false
         });
+        setIsLoading(true);
     }
 
     return (
@@ -148,6 +155,8 @@ function FilterGroup({ attribute }: FilterGroupProps) {
     const pathname = usePathname();
     const { replace } = useRouter();
     const params = new URLSearchParams(searchParams);
+    const { setState: setIsLoading } = useContext(CatalogLoadingStateContext);
+
 
     const filters = params.get('filters');
     const parsedFilters: Filter[] = Array.from(filters ? JSON.parse(filters) : []);
@@ -177,6 +186,7 @@ function FilterGroup({ attribute }: FilterGroupProps) {
         replace(`${pathname}?${params.toString()}`, {
             scroll: false
         });
+        setIsLoading(true);
     }
 
     return (
@@ -217,6 +227,8 @@ function RangeSlider({ priceRange, value, setValue }: RangeSliderProps) {
     const pathname = usePathname();
     const { replace } = useRouter();
     const params = new URLSearchParams(searchParams);
+    const { setState: setIsLoading } = useContext(CatalogLoadingStateContext);
+
 
     const handleChange = (event: Event, newValue: number | number[]) => {
         setValue(newValue as number[]);
@@ -226,6 +238,8 @@ function RangeSlider({ priceRange, value, setValue }: RangeSliderProps) {
         params.set('minPrice', String(value[0]));
         params.set('maxPrice', String(value[1]));
         params.set('page', '1');
+
+        setIsLoading(true);
 
         replace(`${pathname}?${params.toString()}`, {
             scroll: false

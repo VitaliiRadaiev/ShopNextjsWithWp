@@ -1,9 +1,11 @@
 'use client';
 
+import { CatalogLoadingStateContext } from '@/app/5_entities/catalog';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useContext } from 'react';
 
 export default function Pagination({ totalPages }: { totalPages: number }) {
     // NOTE: comment in this code when you get to this point in the course
@@ -12,6 +14,8 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
     const searchParams = useSearchParams() || '';
     const params = new URLSearchParams(searchParams);
     const currentPage = Number(params.get('page')) || 1;
+    const { setState: setIsLoading } = useContext(CatalogLoadingStateContext);
+
 
     const createPageURL = (pageNumber: number | string) => {
         const params = new URLSearchParams(searchParams);
@@ -31,6 +35,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
                     direction="left"
                     href={createPageURL(currentPage - 1)}
                     isDisabled={currentPage <= 1}
+                    onClick={() => setIsLoading(true)}
                 />
 
                 <div className="flex -space-x-px">
@@ -49,6 +54,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
                                 page={page}
                                 position={position}
                                 isActive={currentPage === page}
+                                onClick={() => setIsLoading(true)}
                             />
                         );
                     })}
@@ -58,6 +64,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
                     direction="right"
                     href={createPageURL(currentPage + 1)}
                     isDisabled={currentPage >= totalPages}
+                    onClick={() => setIsLoading(true)}
                 />
             </div>
         </>
@@ -69,11 +76,13 @@ function PaginationNumber({
     href,
     isActive,
     position,
+    onClick
 }: {
     page: number | string;
     href: string;
     position?: 'first' | 'last' | 'middle' | 'single';
     isActive: boolean;
+    onClick: () => void;
 }) {
     const className = clsx(
         'flex h-10 w-10 items-center justify-center text-sm border',
@@ -89,7 +98,7 @@ function PaginationNumber({
     return isActive || position === 'middle' ? (
         <div className={className}>{page}</div>
     ) : (
-        <Link href={href} className={className}>
+        <Link href={href} className={className} onClick={onClick}>
             {page}
         </Link>
     );
@@ -99,10 +108,12 @@ function PaginationArrow({
     href,
     direction,
     isDisabled,
+    onClick
 }: {
     href: string;
     direction: 'left' | 'right';
     isDisabled?: boolean;
+    onClick: () => void;
 }) {
     const className = clsx(
         'flex h-10 w-10 items-center justify-center rounded-md border',
@@ -124,7 +135,7 @@ function PaginationArrow({
     return isDisabled ? (
         <div className={className}>{icon}</div>
     ) : (
-        <Link className={className} href={href}>
+        <Link className={className} href={href} onClick={onClick}>
             {icon}
         </Link>
     );

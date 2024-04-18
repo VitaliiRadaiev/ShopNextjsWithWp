@@ -1,9 +1,10 @@
 "use client";
 
-import React, { ChangeEvent, JSX, useState } from 'react';
+import React, { ChangeEvent, JSX, useContext, useState } from 'react';
 import clsx from 'clsx';
 import { SortByType } from '@/app/5_entities/products';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { CatalogLoadingStateContext } from '@/app/5_entities/catalog';
 
 interface ProductsSortProps {
 
@@ -14,6 +15,8 @@ export function ProductsSort({ }: ProductsSortProps): JSX.Element {
     const pathname = usePathname();
     const { replace } = useRouter();
     const params = new URLSearchParams(searchParams);
+    const { setState: setIsLoading } = useContext(CatalogLoadingStateContext);
+
     const defaultValue: SortByType = params.get('sortBy') as SortByType || 'rank';
 
     const handleFilter = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -22,6 +25,7 @@ export function ProductsSort({ }: ProductsSortProps): JSX.Element {
         replace(`${pathname}?${params.toString()}`, {
             scroll: false
         });
+        setIsLoading(true);
     }
 
     return (

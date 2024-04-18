@@ -20,6 +20,9 @@ export class ProductsApi extends Api {
 
     static getProducts = async (requestData: FetchProductsRestQueriesType) => {
         const params = new URLSearchParams();
+        
+        params.set('_fields', 'id,slug,name,stock_status,average_rating,regular_price,sale_price,price,images,tags');
+
         requestData.count && params.set('per_page', String(requestData.count));
         requestData.categoryId && params.set('category', String(requestData.categoryId));
         requestData.inStock && params.set('stock_status', 'instock');

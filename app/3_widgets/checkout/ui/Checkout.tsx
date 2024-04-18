@@ -6,7 +6,8 @@ import { BasketContext, BasketProductCardMini } from '@/app/5_entities/basket';
 import { ButtonLink } from '@/app/6_shared/ui/Buttons/ButtonLink';
 import { formatCurrencyString } from '@/app/6_shared/utils/formatCurrencyString';
 import clsx from 'clsx';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
+
 
 export function Checkout() {
     const { state } = useContext(BasketContext);
@@ -51,12 +52,12 @@ export function Checkout() {
                                         );
                                     })}
                                 </ul>
-                                <hr className='mt-4'/>
+                                <hr className='mt-4' />
                                 <div className='mt-4 flex items-center justify-between gap-4'>
                                     <span className='text-primary-light text-[16px]'>Стоимость доставки</span>
                                     <span className='font-bold text-[#5e616b] text-end'>По тарифам перевозчика</span>
                                 </div>
-                                <hr className='mt-4'/>
+                                <hr className='mt-4' />
                                 <div className='mt-4 flex items-center justify-between flex-wrap gap-4'>
                                     <span className='text-primary-light text-[22px]'>Итого:</span>
                                     <span className='text-[38px] leading-none font-bold text-[#5e616b]'>{formatCurrencyString(basket.total)}</span>
@@ -65,7 +66,7 @@ export function Checkout() {
                         </div>
                     </div>
                     <div className='md:shrink md:grow'>
-                        <CheckoutForm me={me}/>
+                        <CheckoutForm me={me} />
                     </div>
                 </div>
             </div>

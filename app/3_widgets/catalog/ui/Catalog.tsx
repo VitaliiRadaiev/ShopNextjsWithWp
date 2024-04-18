@@ -29,7 +29,7 @@ export async function Catalog({ catalogSlug, searchParams }: CatalogProps) {
         page: searchParams?.page
     }
     const productsData = await ProductsApi.getProducts(queryOptions);
-    
+
     return (
         <div className="container">
             <H2>{categoryData.productCategory.name}</H2>
