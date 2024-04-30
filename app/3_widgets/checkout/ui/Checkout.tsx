@@ -66,7 +66,7 @@ export function Checkout() {
                         </div>
                     </div>
                     <div className='md:shrink md:grow'>
-                        <CheckoutForm me={me} />
+                        <CheckoutForm />
                     </div>
                 </div>
             </div>

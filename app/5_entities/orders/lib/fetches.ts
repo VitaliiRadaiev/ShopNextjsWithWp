@@ -3,37 +3,7 @@
 import { getJwtFromCookies } from "@/app/6_shared/utils/getJwtFromCookies";
 import { OrderType, OrdersApi } from "..";
 import { fetchApi } from "@/app/6_shared/api/graphqlApi";
-import { FragmentProductCardFields } from "@/app/6_shared/api/fragments";
-
-const FragmentOrderFields = `
-    date
-    billing {
-        email
-        firstName
-        lastName
-        phone
-    }
-    databaseId
-    lineItems {
-        nodes {
-            quantity
-            total
-            product {
-                node {
-                    ${FragmentProductCardFields}
-                }
-            }
-        }
-    }
-    orderNumber
-    paymentMethod
-    paymentMethodTitle
-    shipping {
-        address1
-    }
-    status
-    total
-`;
+import { FragmentOrderFields } from "@/app/6_shared/api/fragments";
 
 export async function fetchHistory() {
     const jwt = await getJwtFromCookies();
@@ -66,6 +36,33 @@ export async function fetchLastOrder(sessionToken: string) {
         errors: data.errors 
     } as {
         data: OrderType | null;
+        errors?: {
+            message: string;
+        }[]
+    }
+}
+
+export async function fetchOrders(sessionToken: string) {
+    const { data } = await fetchApi({
+        query: `
+            query lastOrder {
+                customer {
+                    orders(where: {orderby: {field: DATE}}, first: 100) {
+                        nodes {
+                            ${FragmentOrderFields}
+                        }
+                    }
+                }
+            }
+        `,
+        sessionToken
+    })
+
+    return {
+        data: data.data.customer.orders.nodes,
+        errors: data.errors 
+    } as {
+        data: OrderType[];
         errors?: {
             message: string;
         }[]

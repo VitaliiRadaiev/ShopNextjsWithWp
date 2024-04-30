@@ -13,7 +13,7 @@ import { createOrderAction } from '../lib/actions';
 import { ChooseSettlement } from './ChooseSettlement';
 import { ChooseWarehouse } from './ChooseWarehouse';
 import { ChooseSettlementStreet } from './ChooseSettlementStreet';
-import { UserType } from '@/app/5_entities/users';
+import { CustomerContext, UserType } from '@/app/5_entities/users';
 import { BasketContext } from '@/app/5_entities/basket';
 import { usePathname, useRouter } from 'next/navigation';
 import { ButtonLink } from '@/app/6_shared/ui/Buttons/ButtonLink';
@@ -65,10 +65,9 @@ const RegisterFormSchema = z.object({
 });
 
 interface CheckoutFormProps {
-    me?: UserType;
 }
 
-export function CheckoutForm({ me }: CheckoutFormProps) {
+export function CheckoutForm({ }: CheckoutFormProps) {
     const { state, setState: setBasketState } = useContext(BasketContext);
     const basket = state.cart;
     const [formState, setFormState] = useState<InitialState>({ errors: {} });
@@ -84,6 +83,8 @@ export function CheckoutForm({ me }: CheckoutFormProps) {
     const [stripe, setStripe] = useState<Stripe | null>(null);
     const [elements, setElements] = useState<StripeElements | null>(null);
     const [message, setMessage] = useState<null | string>(null);
+    const { state: customer } = useContext(CustomerContext);
+    const me = customer;
 
 
     if (!basket) return null;
@@ -215,7 +216,7 @@ export function CheckoutForm({ me }: CheckoutFormProps) {
                             )}
                             name='firstName'
                             required
-                            defaultValue={me?.firstName || ''}
+                            defaultValue={me?.customer?.billing.firstName || ''}
                         />
                         {formState.errors?.firstName && <div className='text-rose-500 text-[12px]'>{...formState.errors?.firstName}</div>}
                     </label>
@@ -234,7 +235,7 @@ export function CheckoutForm({ me }: CheckoutFormProps) {
                             )}
                             name='lastName'
                             required
-                            defaultValue={me?.lastName || ''}
+                            defaultValue={me?.customer?.billing.lastName || ''}
                         />
                         {formState.errors?.lastName && <div className='text-rose-500 text-[12px]'>{...formState.errors?.lastName}</div>}
                     </label>
@@ -254,7 +255,7 @@ export function CheckoutForm({ me }: CheckoutFormProps) {
                             )}
                             name='phone'
                             required
-                            defaultValue={me?.phone || ''}
+                            defaultValue={me?.customer?.billing.phone || ''}
                         />
                         {formState.errors?.phone && <div className='text-rose-500 text-[12px]'>{...formState.errors?.phone}</div>}
                     </label>
@@ -272,7 +273,7 @@ export function CheckoutForm({ me }: CheckoutFormProps) {
                             )}
                             name='email'
                             required
-                            defaultValue={me?.email || ''}
+                            defaultValue={me?.customer?.billing.email || ''}
                         />
                         {formState.errors?.email && <div className='text-rose-500 text-[12px]'>{...formState.errors?.email}</div>}
                     </label>

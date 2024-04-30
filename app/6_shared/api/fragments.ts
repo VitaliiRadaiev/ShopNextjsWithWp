@@ -42,3 +42,48 @@ export const FragmentCartFields = `
         }
     }
 `;
+
+export const FragmentOrderFields = `
+    date
+    billing {
+        email
+        firstName
+        lastName
+        phone
+    }
+    databaseId
+    lineItems {
+        nodes {
+            quantity
+            total
+            product {
+                node {
+                    ${FragmentProductCardFields}
+                }
+            }
+        }
+    }
+    orderNumber
+    paymentMethod
+    paymentMethodTitle
+    shipping {
+        address1
+    }
+    status
+    total
+`;
+
+export const FragmentCustomerFields = `
+    databaseId
+    jwtRefreshToken
+    jwtAuthToken
+    username
+    sessionToken
+    role
+    billing {
+        email
+        firstName
+        lastName
+        phone
+    }
+`;

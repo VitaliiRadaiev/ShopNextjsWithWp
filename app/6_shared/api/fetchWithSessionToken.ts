@@ -6,6 +6,7 @@ const targetErrors = [
     'Signature verification failed',
     'Expired token',
     'Wrong number of segments',
+    'invalid-secret-key | Wrong number of segments',
 ];
 
 export async function fetchWithSessionToken<T>(
@@ -14,8 +15,7 @@ export async function fetchWithSessionToken<T>(
     const sessionToken = await getSessionToken();
 
     const res = await fetcher(sessionToken);
-    console.log(res);
-    
+
     if (res.errors) {
         const isSessionError = res.errors.some(error => targetErrors.includes(error.message))
         

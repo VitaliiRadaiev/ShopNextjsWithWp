@@ -1,1 +1,1 @@
-// export { PersonalInformationForm } from "./ui/PersonalInformationForm";
+export { PersonalInformationForm } from "./ui/PersonalInformationForm";

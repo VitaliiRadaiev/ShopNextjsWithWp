@@ -22,11 +22,15 @@ import { Burger } from './Burger';
 import { Menu } from './Menu';
 import { usePathname } from 'next/navigation';
 import { Search } from '@/app/4_features/main-search';
-import { UserType } from '@/app/5_entities/users';
+import { CustomerContext, UserType, fetchMe, hasCredentials } from '@/app/5_entities/users';
 import { BasketContext, BasketType, fetchCart } from '@/app/5_entities/basket';
 import { WishlistType } from '@/app/5_entities/wishlist';
 import { formatCurrencyString } from '@/app/6_shared/utils/formatCurrencyString';
 import { fetchWithSessionToken } from '@/app/6_shared/api/fetchWithSessionToken';
+import { LocaleSwitcher } from './LocalSwitcher';
+import { useAppLocal } from '@/app/6_shared/hooks/useAppLocal';
+import { getAuthToken } from '@/app/6_shared/api/getAuthToken';
+import { getSessionToken } from '@/app/6_shared/api/getSessionToken';
 
 interface HeaderProps {
     categories: CategoryType[];
@@ -45,6 +49,8 @@ export function Header({ categories, user, basket, wishlist }: HeaderProps) {
     const pathname = usePathname();
     const { state: basketState, setState: setBasketState } = useContext(BasketContext);
     const basketQuantityRef = useRef(basketState.cart?.contents.itemCount);
+    const { state: customerState, setState: setCustomerState } = useContext(CustomerContext);
+    const local = useAppLocal();
 
     const headerScrollHandler = (e: Event) => {
         if (window.scrollY > 200) {
@@ -68,6 +74,36 @@ export function Header({ categories, user, basket, wishlist }: HeaderProps) {
         }
     }
 
+    const auth = async () => {
+        const authToken = await getAuthToken();
+        const sessionToken = await getSessionToken();
+
+        if(authToken && sessionToken) {
+            const data = await fetchMe(sessionToken, authToken);
+            if(data.data) {
+                setCustomerState({ customer: data.data });
+            }
+
+            const cartData = await fetchCart(sessionToken, authToken);
+
+            if(cartData.data) {
+                setBasketState(prev => ({
+                    ...prev,
+                    cart: cartData.data
+                }))
+            }
+
+            return;
+        }
+
+
+        const cart = await fetchWithSessionToken((token) => fetchCart(token));
+        setBasketState(prev => ({
+            ...prev,
+            cart
+        }))
+    }
+
     useEffect(() => {
         setIsHeaderShow(true);
         searchShowToggle(false);
@@ -75,12 +111,8 @@ export function Header({ categories, user, basket, wishlist }: HeaderProps) {
     }, [pathname])
 
     useEffect(() => {
-        fetchWithSessionToken((token) => fetchCart(token))
-            .then(data => setBasketState(prev => ({
-                ...prev,
-                cart: data
-            })))
 
+        auth();
 
         pageYOffset.current = window.scrollY;
         window.addEventListener('scroll', headerScrollHandler);
@@ -127,6 +159,9 @@ export function Header({ categories, user, basket, wishlist }: HeaderProps) {
                             <Logo className='w-full max-w-[135px] lg:max-w-[328px]' />
                         </Link>
                         <div className='flex items-start justify-between grow-0 gap-4 lg:gap-6'>
+                            <div>
+                                <LocaleSwitcher />
+                            </div>
                             <div className="flex flex-col items-end hidden lg:block" >
                                 <Link
                                     href='tel:380932290322'
@@ -138,41 +173,24 @@ export function Header({ categories, user, basket, wishlist }: HeaderProps) {
                                 </Link>
                             </div>
 
-                            {user?.isIdentified
+                            {(customerState && customerState.customer?.role === 'customer')
                                 ? <>
-                                    <Link href="/cabinet" className='text-secondary hover:text-secondary-light transition-colors'>
+                                    <Link href={`/${local}/cabinet`} className='text-secondary hover:text-secondary-light transition-colors'>
                                         <UserIcon className='h-6 w-auto w-auto' />
                                     </Link>
-                                    <Link href="/cabinet/orders" className='text-secondary hover:text-secondary-light transition-colors'>
+                                    <Link href={`/${local}/cabinet/orders`} className='text-secondary hover:text-secondary-light transition-colors'>
                                         <ClipboardDocumentListIcon className='h-6 w-auto w-auto' />
                                     </Link>
-                                    <Link href="/cabinet/wishlist" className='text-secondary hover:text-secondary-light transition-colors'>
-                                        <Badge
-                                            badgeContent={wishlist?.products.length}
-                                            slotProps={{
-                                                root: {
-                                                    className: 'relative shrink-0 grow-0'
-                                                },
-                                                badge: {
-                                                    className: clsx(
-                                                        'text-[11px] text-white font-bold absolute',
-                                                        'top-0 right-0 z-2',
-                                                        'flex justify-center items-center',
-                                                        'h-5 min-w-5 rounded-full',
-                                                        'translate-x-1/2 translate-y-[-27%]',
-                                                        'bg-info border-2 border-white',
-                                                        {
-                                                            'hidden': !wishlist?.products.length
-                                                        }
-                                                    )
-                                                }
-                                            }}
-                                        >
-                                            <StarIcon className='h-6 w-auto w-auto' />
-                                        </Badge>
-                                    </Link>
                                 </>
-                                : <></>
+                                : <Link href={`/${local}/authorization`} className='hidden lg:flex gap-3 text-secondary hover:text-secondary-light transition-colors'>
+                                    <div className=' shrink-0 grow-0'>
+                                        <IconKey className='h-6 w-auto' />
+                                    </div>
+                                    <div className="pt-1">
+                                        <div className="mb-1 font-bold text-[17px] leading-tight">Войти</div>
+                                        <div className=' text-slate-300 text-sm whitespace-nowrap'>Мой кабинет</div>
+                                    </div>
+                                </Link>
                             }
 
                             <Link

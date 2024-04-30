@@ -1,3 +1,5 @@
+import { inherits } from "util";
+
 export interface GetPagesResponse {
     id: number;
     slug: string;
@@ -40,4 +42,12 @@ export interface StatsSection extends Section<'stats'> {
         stat: string;
         desc: string;
     }[]
+}
+
+export interface DefaultParams {
+    local?: string;
+}
+
+export interface GetPageParams extends DefaultParams {
+    slug: string;
 }

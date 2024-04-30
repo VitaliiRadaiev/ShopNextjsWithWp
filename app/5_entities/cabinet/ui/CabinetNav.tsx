@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import { PropsWithChildren, useEffect, useState } from 'react';
-import { Bars3Icon, XMarkIcon, UserIcon, ClipboardDocumentListIcon, StarIcon } from '@heroicons/react/24/solid';
+import { Bars3Icon, XMarkIcon, UserIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/solid';
 import { Button } from '@/app/6_shared/ui/Buttons/Button';
 import { usePathname } from 'next/navigation';
 
@@ -66,21 +66,6 @@ export function CabinetNav({ children }: PropsWithChildren) {
                         >
                             <ClipboardDocumentListIcon className='h-[1em] w-auto' />
                             История
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            href="/cabinet/wishlist"
-                            className={clsx(
-                                'flex items-center gap-2',
-                                'transition-colors [&:not(.active)]:hover:text-secondary-light',
-                                {
-                                    'text-secondary active': pathname === '/cabinet/wishlist'
-                                }
-                            )}
-                        >
-                            <StarIcon className='h-[1em] w-auto' />
-                            Список Желаний
                         </Link>
                     </li>
                 </ul>

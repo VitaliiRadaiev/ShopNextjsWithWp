@@ -8,6 +8,7 @@ import 'swiper/css/scrollbar';
 import { CategoryType } from '@/app/5_entities/categories';
 import Link from 'next/link';
 import { Scrollbar } from 'swiper/modules';
+import { useAppLocal } from '@/app/6_shared/hooks/useAppLocal';
 
 interface HeaderCategoriesProps {
     categories: CategoryType[]
@@ -16,6 +17,7 @@ interface HeaderCategoriesProps {
 export function HeaderCategories({ categories }: HeaderCategoriesProps): JSX.Element {
     const [isSliderEnd, setIsSliderEnd] = useState(true);
     const [isSliderBeginning, setIsSliderBeginning] = useState(true);
+    const local = useAppLocal();
     return (
         <Swiper
             spaceBetween={0}
@@ -48,7 +50,7 @@ export function HeaderCategories({ categories }: HeaderCategoriesProps): JSX.Ele
         >
             <SwiperSlide key={'categories'} style={{ width: 'auto' }} className='[&_a]:last:border-r'>
                 <Link
-                    href={'/categories'}
+                    href={`/${local}/categories`}
                     className={`
                             h-10 p-2 text-white transition
                             hover:bg-secondary-light flex 
@@ -57,7 +59,8 @@ export function HeaderCategories({ categories }: HeaderCategoriesProps): JSX.Ele
                             shrink grow min-w-56
                             `}
                 >
-                    Категории
+                    {local === "ru" ? 'Категории' : 'Categories'}
+                    
                 </Link>
             </SwiperSlide>
             {categories.map(category =>

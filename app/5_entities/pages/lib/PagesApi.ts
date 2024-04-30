@@ -1,5 +1,5 @@
 import { Api } from "@/app/6_shared/api/Api";
-import { GetPagesResponse, Page } from "./types";
+import { DefaultParams, GetPageParams, GetPagesResponse, Page } from "./types";
 
 
 
@@ -60,10 +60,11 @@ export class PagesApi extends Api {
     //     };
     // }
 
-    static getPages = async () => {
+    static getPages = async ({ local }: DefaultParams) => {
         const params = new URLSearchParams();
         params.set('acf_format', 'standard');
         params.set('_fields', 'id,slug,title');
+        local && params.set('lang', local);
 
         const res = await fetch(`${this.currentUrl}?${params.toString()}`, {
             method: 'GET',
@@ -77,11 +78,12 @@ export class PagesApi extends Api {
         return data as GetPagesResponse[];
     }
 
-    static getPage = async (slug: string): Promise<Page | undefined> => {
+    static getPage = async ({ local, slug }: GetPageParams): Promise<Page | undefined> => {
         const params = new URLSearchParams();
         params.set('acf_format', 'standard');
         params.set('_fields', 'acf');
         params.set('slug', slug);
+        local && params.set('lang', local);
 
         const res = await fetch(`${this.currentUrl}?${params.toString()}`, {
             method: 'GET',

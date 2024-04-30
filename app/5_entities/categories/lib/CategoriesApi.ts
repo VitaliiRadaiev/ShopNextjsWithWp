@@ -20,4 +20,20 @@ export class CategoriesApi extends Api {
         })
         return await this.handleResponse<CategoryType>(res);
     }
+
+    static getCategoryAttributes = async (categoryId: number, slug: string) => {
+        const params = new URLSearchParams();
+        
+        //params.set('_fields', 'id,slug,name,stock_status,average_rating,regular_price,sale_price,price,images,tags');
+        params.set('category', String(categoryId));
+        params.set('slug', slug);
+        const res = await fetch(`${this.baseUrl}/products?${params.toString()}`)
+
+        if(res.ok) {
+            const data = await res.json();
+            return data[0];
+        } else {
+            throw new Error('Error in getCategoryAttributes(), status:' + res.status);
+        }
+    }
 }

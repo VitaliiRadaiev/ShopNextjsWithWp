@@ -1,12 +1,15 @@
 "use client";
 
-import React, { JSX, useEffect, useState } from 'react';
+import React, { JSX, useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { H2 } from '@/app/6_shared/ui/Titles';
 import { OrderCard, OrderType, fetchLastOrder } from '@/app/5_entities/orders';
 import { fetchWithSessionToken } from '@/app/6_shared/api/fetchWithSessionToken';
 import { LoadingDots } from '@/app/6_shared/ui/LoadingDots/LoadingDots';
 import { ButtonLink } from '@/app/6_shared/ui/Buttons/ButtonLink';
+import { CustomerContext, fetchMe } from '@/app/5_entities/users';
+import { getAuthToken } from '@/app/6_shared/api/getAuthToken';
+import { getSessionToken } from '@/app/6_shared/api/getSessionToken';
 
 interface OrderConfirmationProps {
 
@@ -16,6 +19,7 @@ export function OrderConfirmation({ }: OrderConfirmationProps): JSX.Element {
     const [order, setOrder] = useState<OrderType | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [isFetchCompleted, setIsFetchCompleted] = useState(false);
+    const { setState: setCustomerState } = useContext(CustomerContext);
 
     const getLastOrder = async () => {
         setIsFetching(true);
@@ -25,8 +29,21 @@ export function OrderConfirmation({ }: OrderConfirmationProps): JSX.Element {
         setIsFetchCompleted(true);
     }
 
+    const updateCustomerState = async () => {
+        const authToken = await getAuthToken();
+        const sessionToken = await getSessionToken();
+
+        if(authToken && sessionToken) {
+            const data = await fetchMe(sessionToken, authToken);
+            if(data.data) {
+                setCustomerState({ customer: data.data });
+            }
+        }
+    }
+
     useEffect(() => {
         getLastOrder();
+        updateCustomerState();
     }, []);
 
     if (isFetchCompleted && !order) {

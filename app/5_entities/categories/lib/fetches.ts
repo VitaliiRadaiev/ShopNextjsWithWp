@@ -1,6 +1,7 @@
 import { TAGS, fetchApi } from "@/app/6_shared/api/graphqlApi";
 import { CategoriesApi } from "./CategoriesApi";
 import { AttributeType, CategoryType, TagType } from "./types";
+import { Locale } from "@/public/i18nConfig";
 
 const FragmentCategoryFields = `
     databaseId
@@ -12,17 +13,20 @@ const FragmentCategoryFields = `
     slug
 `
 
-export async function fetchCategories() {
+export async function fetchCategories(language?: Locale) {
     const { data } = await fetchApi({
         query: `
-            query getProductCategories {
-                productCategories(where: {orderby: MENU_ORDER, order: ASC}) {
+            query getProductCategories($language: String = "ru") {
+                productCategories(where: {orderby: MENU_ORDER, order: ASC, language: $language}) {
                     nodes {
                         ${FragmentCategoryFields}
                     }
                 }
             }
         `,
+        variables: {
+            language
+        },
         options: {
             next: {
                 revalidate: 600

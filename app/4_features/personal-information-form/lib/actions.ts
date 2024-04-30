@@ -1,14 +1,50 @@
-// 'use server';
+'use server';
 
-// import { UsersApi } from "@/app/5_entities/users";
-// import { Api } from "@/app/6_shared/api/Api";
-// import { getJwtFromCookies } from "@/app/6_shared/utils/getJwtFromCookies";
-// import { revalidateTag } from "next/cache";
+import { CustomerType } from "@/app/5_entities/users";
+import { FragmentCustomerFields } from "@/app/6_shared/api/fragments";
+import { fetchApi } from "@/app/6_shared/api/graphqlApi";
 
-// export async function updateMeAction(data: { firstName: string, lastName: string, phone: string}) {
-//     const jwt = await getJwtFromCookies();
-//     if(!jwt) return;
+interface updateMeData {
+    firstName: string;
+    lastName: string;
+    phone: string;
+}
 
-//     await UsersApi.updateMe(jwt, data);
-//     revalidateTag(Api.TAGS.me);
-// }
+export async function updateMeAction(sessionToken: string, authToken: string, newData: updateMeData) {
+    const { data } = await fetchApi({
+        query: `
+            mutation updateCustomer($firstName: String!, $lastName: String!, $phone: String!) {
+                updateCustomer(
+                    input: {
+                        billing: {
+                            firstName: $firstName, 
+                            lastName: $lastName, 
+                            phone: $phone
+                        }
+                    }
+                ) {
+                    customer {
+                        ${FragmentCustomerFields}
+                    }
+                }
+            }
+        `,
+        variables: {
+            firstName: newData.firstName,
+            lastName: newData.lastName,
+            phone: newData.phone,
+        },
+        sessionToken,
+        authToken
+    })
+
+    return {
+        data: data.data.updateCustomer.customer,
+        errors: data.errors
+    } as {
+        data: CustomerType | null;
+        errors?: {
+            message: string;
+        }[]
+    }
+}

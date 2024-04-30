@@ -10,9 +10,10 @@ export async function fetchBasket() {
     return await BasketApi.getBasket(jwt);
 }
 
-export async function fetchCart(sessionToken: string) {
+export async function fetchCart(sessionToken: string, authToken?:string) {
     const res = await fetchApi({
         sessionToken,
+        authToken,
         query: `
                 query getCart {
                     cart {

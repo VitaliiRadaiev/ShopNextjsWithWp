@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 export default function catalogPage(
     { params, searchParams }:
         {
-            params: { slug: string },
+            params: { slug: string, locale: string },
             searchParams: Record<string, string>
         }
 ) {

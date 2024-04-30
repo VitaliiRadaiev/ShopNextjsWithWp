@@ -4,7 +4,7 @@ export const TAGS = {
     product: 'Product'
 }
 
-export async function fetchApi({ query, variables, options, headers, sessionToken}: {
+export async function fetchApi({ query, variables, options, headers, sessionToken, authToken}: {
     query: string,
     variables?: Record<string, any>,
     options?: {
@@ -13,15 +13,18 @@ export async function fetchApi({ query, variables, options, headers, sessionToke
     },
     headers?: Record<string, string>
     sessionToken?: string;
+    authToken?: string;
 }
 ) {
-    const setHeaderToken = sessionToken ? { 'woocommerce-session': `Session ${sessionToken}` } : {} as Record<string, string>;
+    const headerSessionToken = sessionToken ? { 'woocommerce-session': `Session ${sessionToken}` } : undefined;
+    const headerAuthToken = authToken ? { 'Authorization': `Bearer ${authToken}` } : undefined;
 
     const res = await fetch(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT as string, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            ...setHeaderToken,
+            ...headerSessionToken,
+            ...headerAuthToken,
             ...headers
         },
         body: JSON.stringify({

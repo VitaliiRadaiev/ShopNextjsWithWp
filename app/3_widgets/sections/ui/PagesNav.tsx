@@ -2,8 +2,8 @@ import { PagesApi } from '@/app/5_entities/pages';
 import clsx from 'clsx';
 import Link from 'next/link';
 
-export async function PagesNav({ slug }: { slug: string }) {
-    const pages = await PagesApi.getPages();
+export async function PagesNav({ slug, locale }: { slug: string, locale: string }) {
+    const pages = await PagesApi.getPages({ local: locale });
     
     return (
         <div className="container">
@@ -15,7 +15,7 @@ export async function PagesNav({ slug }: { slug: string }) {
                             return (
                                 <Link
                                     key={page.id}
-                                    href={'/' + page.slug}
+                                    href={page.slug}
                                     className={clsx(
                                         'text-sm font-semibold leading-6 text-gray-900',
                                         {

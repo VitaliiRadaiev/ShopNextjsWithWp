@@ -35,3 +35,18 @@ export type RegisterResponseDataType = {
     lastName: string;
     phone: string;
 }
+
+export type CustomerType = {
+    databaseId: number;
+    jwtAuthToken: string;
+    jwtRefreshToken: string;
+    sessionToken: string;
+    username: string;
+    role: string;
+    billing: {
+        email: string;
+        firstName: string;
+        lastName: string;
+        phone: string;
+    }
+}

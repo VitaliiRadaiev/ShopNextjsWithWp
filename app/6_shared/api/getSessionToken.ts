@@ -1,22 +1,31 @@
 'use client';
 
+import { getAuthToken } from "./getAuthToken";
 import { fetchApi } from "./graphqlApi";
 
 
 export async function fetchSessionToken() {
-    const { data } = await fetchApi({
-        query: `
-            query getSessionToken {
-                customer {
-                    id
-                    sessionToken
-                    checkoutUrl
+    const authToken = await getAuthToken();
+    let sessionToken: string;
+
+    try {
+        const { data } = await fetchApi({
+            query: `
+                query getSessionToken {
+                    customer {
+                        sessionToken
+                    }
                 }
-            }
-        `
-    })
- 
-    return data.data.customer.sessionToken as string;
+            `,
+            authToken: authToken || undefined
+        })
+
+        sessionToken = data.data.customer.sessionToken as string;
+    } catch (error) {
+        throw new Error(String(error));
+    }
+
+    return sessionToken;
 }
 
 

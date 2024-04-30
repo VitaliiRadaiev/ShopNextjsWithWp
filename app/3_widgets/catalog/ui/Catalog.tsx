@@ -8,14 +8,19 @@ import { ProductsSort } from './ProductsSort';
 import { Products } from './Products';
 import Pagination from './Pagination';
 import { FetchProductsRestQueriesType } from '@/app/5_entities/products/lib/ProductsApi';
+import { notFound } from 'next/navigation';
 
 interface CatalogProps {
     catalogSlug: string;
-    searchParams: Record<string, string>
+    searchParams: Record<string, string>;
 }
 
 export async function Catalog({ catalogSlug, searchParams }: CatalogProps) {
     const categoryData = await fetchCategoryBySlug(catalogSlug);
+
+    if(!categoryData) {
+        notFound();
+    }
 
     const queryOptions: FetchProductsRestQueriesType = {
         count: 15,
