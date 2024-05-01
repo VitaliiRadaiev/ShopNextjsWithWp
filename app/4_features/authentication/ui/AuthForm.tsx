@@ -123,7 +123,6 @@ export function AuthForm({ }: AuthFormProps): JSX.Element {
                                     'border-rose-500': loginError || state.errors?.username
                                 }
                             )}
-                            defaultValue={'Lena'}
                             name='username'
                         />
                         {state.errors?.username && <div className='text-rose-500 text-[12px]'>{...state.errors?.username}</div>}
@@ -141,7 +140,6 @@ export function AuthForm({ }: AuthFormProps): JSX.Element {
                                     }
                                 )}
                                 name='password'
-                                defaultValue={'233dE#sdf'}
                             />
                         </div>
                         {state.errors?.password && <div className='text-rose-500 text-[12px]'>{...state.errors?.password}</div>}

@@ -55,7 +55,7 @@ export async function fetchOrders(sessionToken: string) {
                 }
             }
         `,
-        sessionToken
+        sessionToken,
     })
 
     return {

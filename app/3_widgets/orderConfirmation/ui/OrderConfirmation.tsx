@@ -34,7 +34,9 @@ export function OrderConfirmation({ }: OrderConfirmationProps): JSX.Element {
         const sessionToken = await getSessionToken();
 
         if(authToken && sessionToken) {
+
             const data = await fetchMe(sessionToken, authToken);
+
             if(data.data) {
                 setCustomerState({ customer: data.data });
             }
